@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PCB Printing | VISIONPRINT | UNITECH</title>
+<meta name="description" content="VISIONPRINT, UNITECH's CCD registering screen printer with multi-servo technology, for accurate and uniform PCB screen printing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   THEME TOKENS
+   ========================================================= */
+:root{
+  --red:#d71920;
+  --red-soft:rgba(215,25,32,.14);
+  --font-head:'Montserrat','Segoe UI',Arial,sans-serif;
+  --font-body:'Inter','Segoe UI',Arial,sans-serif;
+  /* TYPE SYSTEM
+     headings  = Montserrat ExtraBold (800)   -> h1, h2, big numbers
+     subheads  = Montserrat SemiBold  (600)   -> h3, lead lines, names, bold lead-ins
+     labels    = Inter Medium         (500)   -> tags, menu, buttons, captions, small text
+     body      = Inter Regular        (400)   -> paragraphs and lists */
+  --w-head:800; --w-sub:600; --w-label:500; --w-body:400;
+}
+[data-theme="dark"]{
+  --page:#050506;
+  --bg:#121214;
+  --bg-2:#17171a;
+  --surface:#1e1e22;
+  --text:#f4f4f5;
+  --muted:#a7aab2;
+  --line:rgba(255,255,255,.10);
+  --shadow:0 1.2cqw 3cqw rgba(0,0,0,.45);
+  --grid-line:rgba(255,255,255,.035);
+  --logo-bg:transparent;
+}
+[data-theme="light"]{
+  --page:#dcdde1;
+  --bg:#f6f6f7;
+  --bg-2:#ffffff;
+  --surface:#ffffff;
+  --text:#17171a;
+  --muted:#5b5f68;
+  --line:rgba(0,0,0,.10);
+  --shadow:0 1.2cqw 3cqw rgba(0,0,0,.12);
+  --grid-line:rgba(0,0,0,.045);
+  --logo-bg:transparent;
+}
+
+/* =========================================================
+   BASE + 16:9 / 9:16 STAGE
+   ========================================================= */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--page);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:var(--font-body);
+  font-weight:var(--w-body);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+/* Large screens (laptop, desktop, projector): 16:9 */
+.stage{
+  position:relative;
+  width:min(100vw,177.7778vh);
+  aspect-ratio:16/9;
+  container-type:size;
+  background:var(--bg);
+  overflow:hidden;
+  box-shadow:0 0 0 1px var(--line);
+}
+@supports (height:1dvh){ .stage{ width:min(100vw,177.7778dvh); } }
+
+/* Mobile / portrait: 9:16 */
+@media (max-aspect-ratio:1/1){
+  .stage{ width:min(100vw,56.25vh); aspect-ratio:9/16; }
+}
+@supports (height:1dvh){
+  @media (max-aspect-ratio:1/1){ .stage{ width:min(100vw,56.25dvh); } }
+}
+
+/* Everything inside scales with the stage width (cqw) */
+.frame{
+  /* landscape tokens */
+  --fs-h1:4.4cqw; --fs-h2:2.9cqw; --fs-h3:1.35cqw;
+  --fs-body:1.12cqw; --fs-sm:.85cqw; --fs-xs:.72cqw;
+  --pad:3.2cqw; --gap:1.6cqw; --radius:.9cqw;
+  --hh:6cqw; --fh:4.6cqw; --btn:3.1cqw;
+
+  width:100%;height:100%;
+  display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;
+  background:var(--bg);
+}
+@media (max-aspect-ratio:1/1){
+  .frame{
+    --fs-h1:9.6cqw; --fs-h2:7.2cqw; --fs-h3:4.4cqw;
+    --fs-body:3.7cqw; --fs-sm:3.1cqw; --fs-xs:2.7cqw;
+    --pad:6cqw; --gap:3.6cqw; --radius:2.6cqw;
+    --hh:12cqw; --fh:11cqw; --btn:8cqw;
+  }
+}
+
+/* =========================================================
+   HEADER  (logo + slide titles)
+   ========================================================= */
+.top{
+  display:flex;align-items:center;gap:2cqw;
+  padding:0 var(--pad);
+  min-height:var(--hh);
+  background:var(--bg-2);
+  border-bottom:1px solid var(--line);
+  position:relative;z-index:5;
+}
+.brand{
+  display:flex;align-items:center;justify-content:center;
+  height:calc(var(--hh) * .62);
+  max-width:14cqw;
+  flex:0 0 auto;
+  background:var(--logo-bg);
+  border-radius:.4cqw;
+}
+/* Both logos sit in the header; only the one for the current theme is shown (see data-show, set by the script) */
+.brand .logo,.brand .brand-text{display:none}
+.brand .logo{height:100%;width:auto;max-width:100%;object-fit:contain}
+.brand[data-show="light"] .logo-light,
+.brand[data-show="dark"]  .logo-dark{display:block}
+.brand[data-show="text"] .brand-text{display:inline}
+.brand .brand-text{
+  font-family:var(--font-head);font-weight:var(--w-head);letter-spacing:.12em;
+  font-size:calc(var(--fs-h3) * 1.05);color:var(--text);
+}
+.brand .brand-text b{color:var(--red)}
+[hidden]{display:none !important}
+/* used only when the dark-theme logo file is missing: the light logo is shown on a white chip so it stays visible */
+.brand.chip{background:#fff;padding:.35cqw .9cqw;border-radius:.5cqw}
+
+.nav{
+  display:flex;gap:.3cqw;flex:1 1 auto;min-width:0;
+  overflow-x:auto;scrollbar-width:none;
+  justify-content:flex-end;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav button{
+  position:relative;white-space:nowrap;
+  font-family:var(--font-body);font-weight:var(--w-label);
+  font-size:var(--fs-sm);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);
+  padding:.7cqw .9cqw;border-radius:.5cqw;
+  transition:color .25s,background .25s;
+}
+.nav button:hover{color:var(--text)}
+.nav button[aria-current="true"]{color:var(--red)}
+.nav button[aria-current="true"]::after{
+  content:"";position:absolute;left:.9cqw;right:.9cqw;bottom:.1cqw;
+  height:.2cqw;min-height:2px;background:var(--red);border-radius:2px;
+}
+@media (max-aspect-ratio:1/1){
+  .top{flex-wrap:wrap;gap:0;padding-top:2cqw}
+  .brand{height:8cqw;max-width:34cqw}
+  .nav{order:3;flex:0 0 100%;justify-content:flex-start;padding:1cqw 0 0}
+  .nav button{padding:2cqw 2.6cqw}
+  .nav button[aria-current="true"]::after{left:2.6cqw;right:2.6cqw}
+}
+
+/* =========================================================
+   SLIDES
+   ========================================================= */
+.viewport{position:relative;overflow:hidden;min-height:0}
+.track{
+  display:flex;height:100%;
+  transition:transform .75s cubic-bezier(.77,0,.18,1);
+  will-change:transform;
+}
+.slide{
+  flex:0 0 100%;height:100%;min-width:0;
+  padding:var(--pad);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;
+}
+@media (max-aspect-ratio:1/1){
+  .slide{overflow-y:auto;justify-content:flex-start;scrollbar-width:none}
+  .slide::-webkit-scrollbar{display:none}
+}
+/* subtle engineering grid + red glow behind every slide */
+.slide::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:4cqw 4cqw;
+  mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 75%);
+}
+.slide > *{position:relative;z-index:1}
+
+/* entrance animation */
+.reveal{opacity:0;transform:translateY(2cqw);transition:opacity .7s ease,transform .7s ease}
+.slide.is-active .reveal{opacity:1;transform:none;transition-delay:calc(var(--d,0) * 1s + .35s)}
+
+/* type */
+.tag{
+  display:inline-flex;align-items:center;gap:.7cqw;
+  font-family:var(--font-body);font-weight:var(--w-label);
+  font-size:var(--fs-sm);letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+  margin-bottom:1.1cqw;
+}
+.tag::before{content:"";width:2.4cqw;height:2px;background:var(--red)}
+h1,h2,h3{font-family:var(--font-head);line-height:1.08;letter-spacing:-.01em}
+h1{font-size:var(--fs-h1);font-weight:var(--w-head)}
+h2{font-size:var(--fs-h2);font-weight:var(--w-head);margin-bottom:var(--gap)}
+h3{font-size:var(--fs-h3);font-weight:var(--w-sub)}
+h1 em,h2 em{font-style:normal;color:var(--red)}
+p{font-size:var(--fs-body);line-height:1.65;color:var(--muted)}
+p strong{color:var(--text);font-weight:var(--w-label)}
+.lead{color:var(--text);font-size:calc(var(--fs-body) * 1.15);font-family:var(--font-head);font-weight:var(--w-sub);line-height:1.5}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6cqw;
+  font-family:var(--font-body);font-weight:var(--w-label);letter-spacing:.06em;text-transform:uppercase;
+  font-size:var(--fs-sm);
+  padding:1.05cqw 2cqw;border-radius:.5cqw;
+  background:var(--red);color:#fff;border:1px solid var(--red);
+  transition:transform .2s,box-shadow .2s,background .2s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 .8cqw 2cqw rgba(215,25,32,.35)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--red);color:var(--red);box-shadow:none}
+.btns{display:flex;flex-wrap:wrap;gap:1cqw;margin-top:calc(var(--gap) * 1.2)}
+.btn.wa{background:#25d366;border-color:#25d366;color:#06240f}
+.btn.wa:hover{box-shadow:0 .8cqw 2cqw rgba(37,211,102,.35)}
+.btn.wa svg{width:1.6em;height:1.6em;flex:0 0 auto}
+@media (max-aspect-ratio:1/1){ .btn{padding:3cqw 5cqw;border-radius:1.6cqw;gap:2cqw} .btns{gap:2.4cqw} }
+
+.card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:calc(var(--gap) * 1.1);
+  transition:border-color .25s,transform .25s;
+}
+.card:hover{border-color:var(--red);transform:translateY(-.3cqw)}
+
+.cols{display:grid;gap:calc(var(--gap) * 2);align-items:center;min-height:0}
+@media (max-aspect-ratio:1/1){ .cols{gap:var(--gap)} }
+
+/* ---------- Slide 1: hero ---------- */
+.s1 .cols{grid-template-columns:1.25fr .75fr}
+.s1 .story{margin-top:var(--gap);max-width:46cqw;border-left:3px solid var(--red);padding-left:1.4cqw}
+.s1 .story p+p{margin-top:.8cqw}
+.target{width:100%;max-width:30cqw;justify-self:center;color:var(--red)}
+.target .ring-spin{transform-origin:50% 50%;animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-aspect-ratio:1/1){
+  .s1 .cols{grid-template-columns:1fr}
+  .s1 .story{max-width:none;padding-left:3.5cqw}
+  .s1 .story p+p{margin-top:2cqw}
+  .target{max-width:46cqw;order:-1}
+}
+
+/* ---------- Slide 2: full-screen video collage (4 YouTube videos) ---------- */
+.s2{padding:0}
+.s2::before{display:none}
+.collage{
+  position:relative;width:100%;height:100%;min-height:0;
+  display:grid;gap:.35cqw;background:var(--bg);
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) 26cqw;
+  grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"v1 v2 v3" "v4 v4 v3";
+}
+.vtile{position:relative;display:block;overflow:hidden;min-width:0;min-height:0;background:#000;cursor:pointer}
+.vtile.v1{grid-area:v1} .vtile.v2{grid-area:v2} .vtile.v3{grid-area:v3} .vtile.v4{grid-area:v4}
+/* .clip is the size container: the 16:9 YouTube player is scaled to COVER it, like object-fit:cover */
+.vtile .clip{
+  position:absolute;inset:0;container-type:size;
+  background:#0b0b0d center / cover no-repeat;   /* video thumbnail shows until the video starts */
+}
+.vtile iframe{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  --fh:max(100cqh, calc(100cqw / var(--ar)));
+  height:var(--fh);width:calc(var(--fh) * 1.7778);
+  border:0;pointer-events:none;   /* clicks go to the link on top, which opens YouTube */
+}
+.vtile::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(transparent 60%,rgba(0,0,0,.55));
+  transition:background .3s;
+}
+.vtile:hover::after,.vtile:focus-visible::after{background:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,.5))}
+.vlabel{
+  position:absolute;left:1cqw;bottom:1cqw;z-index:2;
+  display:inline-flex;align-items:center;gap:.5cqw;
+  padding:.45cqw .9cqw;border-radius:99px;
+  background:rgba(0,0,0,.62);color:#fff;
+  font-family:var(--font-body);font-weight:var(--w-label);font-size:var(--fs-xs);letter-spacing:.06em;text-transform:uppercase;
+  transition:background .25s,transform .25s;
+}
+.vlabel svg{width:1.1cqw;height:1.1cqw;color:var(--red);flex:0 0 auto}
+.vtile:hover .vlabel,.vtile:focus-visible .vlabel{background:var(--red);transform:translateY(-.2cqw)}
+.vtile:hover .vlabel svg,.vtile:focus-visible .vlabel svg{color:#fff}
+@media (max-aspect-ratio:1/1){
+  .collage{
+    gap:1cqw;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:repeat(3,minmax(0,1fr));
+    grid-template-areas:"v1 v1" "v3 v2" "v3 v4";
+  }
+  .vlabel{left:2cqw;bottom:2cqw;padding:1.1cqw 2.4cqw;gap:1.2cqw}
+  .vlabel svg{width:3cqw;height:3cqw}
+}
+
+/* ---------- Slide 3: features ---------- */
+.s3 .head{max-width:60cqw;margin-bottom:var(--gap)}
+.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
+.feature .num{
+  font-family:var(--font-head);font-weight:var(--w-head);font-size:calc(var(--fs-h2) * 1.1);
+  color:var(--red);line-height:1;margin-bottom:.9cqw;opacity:.9;
+}
+.feature h3{margin-bottom:.6cqw}
+.feature p{font-size:var(--fs-sm);line-height:1.6}
+@media (max-aspect-ratio:1/1){
+  .features{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feature .num{margin-bottom:2cqw}
+  .feature p{font-size:var(--fs-xs)}
+}
+
+/* ---------- Slide 4: benefits ---------- */
+.s4 .cols{grid-template-columns:1.1fr .9fr;align-items:stretch}
+.benefits{list-style:none;display:grid;gap:1cqw}
+.benefits li{
+  display:flex;gap:1.1cqw;align-items:flex-start;
+  padding:1.1cqw 1.3cqw;border-radius:var(--radius);
+  background:var(--surface);border:1px solid var(--line);
+  font-size:var(--fs-body);color:var(--text);line-height:1.45;
+}
+.benefits svg{flex:0 0 auto;width:1.7cqw;height:1.7cqw;color:var(--red);margin-top:.05cqw}
+.benefits b{font-family:var(--font-head);font-weight:var(--w-sub)}
+.statement{
+  padding:calc(var(--gap) * 1.6);border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,var(--red-soft),transparent 60%),var(--surface);
+}
+.statement .big{
+  font-family:var(--font-head);font-weight:var(--w-head);font-size:calc(var(--fs-h2) * 1.15);
+  line-height:1.1;margin-bottom:var(--gap);
+}
+.statement .big em{font-style:normal;color:var(--red)}
+/* right-side image on the Benefits slide */
+.shot{
+  position:relative;overflow:hidden;min-height:0;
+  border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);
+}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}
+.shot:hover img{transform:scale(1.04)}
+.shot .ph{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8cqw;
+  color:var(--muted);text-align:center;padding:1.5cqw;
+  background:repeating-linear-gradient(135deg,transparent 0 1.2cqw,var(--grid-line) 1.2cqw 1.3cqw),var(--surface);
+}
+.shot .ph svg{width:4cqw;height:4cqw;color:var(--red)}
+.shot .ph span{font-size:var(--fs-xs);letter-spacing:.1em;text-transform:uppercase;font-weight:var(--w-label)}
+@media (max-aspect-ratio:1/1){
+  .s4 .cols{grid-template-columns:1fr}
+  .shot{aspect-ratio:16/10;width:100%;justify-self:stretch}
+  .shot .ph svg{width:10cqw;height:10cqw}
+  .shot .ph{gap:2.4cqw}
+  .benefits{gap:2.2cqw}
+  .benefits li{padding:3cqw}
+  .benefits svg{width:5.2cqw;height:5.2cqw}
+}
+
+/* ---------- Slide 5: testimonials ---------- */
+.s5 .head{margin-bottom:var(--gap)}
+.quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+.quote{display:flex;flex-direction:column;gap:1.1cqw}
+.quote .mark{font-family:var(--font-head);font-weight:var(--w-head);font-size:4.5cqw;line-height:.6;color:var(--red);height:2cqw}
+.quote blockquote{font-size:var(--fs-body);line-height:1.65;color:var(--text);flex:1}
+.quote .who{border-top:1px solid var(--line);padding-top:1cqw}
+.quote .who b{display:block;font-family:var(--font-head);font-weight:var(--w-sub);font-size:var(--fs-body)}
+.quote .who span{font-size:var(--fs-sm);font-weight:var(--w-label);color:var(--muted)}
+@media (max-aspect-ratio:1/1){
+  .quotes{
+    display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:3cqw;
+    margin:0 calc(var(--pad) * -1);padding:0 var(--pad) 2cqw;scrollbar-width:none;
+  }
+  .quotes::-webkit-scrollbar{display:none}
+  .quote{flex:0 0 82%;scroll-snap-align:center}
+  .quote .mark{font-size:14cqw;height:6cqw}
+}
+
+/* ---------- Slide 6: star companies ---------- */
+.s6 .head{margin-bottom:var(--gap)}
+.logos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
+.logo-tile{
+  display:flex;align-items:center;justify-content:center;
+  aspect-ratio:16/9;padding:1.2cqw;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  font-family:var(--font-head);font-weight:var(--w-sub);color:var(--muted);
+  font-size:var(--fs-body);text-align:center;
+  transition:border-color .25s,transform .25s,color .25s;
+}
+a.logo-tile:hover,.logo-tile:hover{border-color:var(--red);color:var(--text);transform:translateY(-.3cqw)}
+.logo-tile img{max-width:100%;max-height:100%;object-fit:contain}
+@media (max-aspect-ratio:1/1){
+  .logos{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .logo-tile{padding:3cqw}
+}
+
+/* ---------- Slide 7: demo centre ---------- */
+.s7 .cols{grid-template-columns:1.15fr .85fr}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1cqw;margin-top:var(--gap)}
+.step{padding:1.2cqw;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface)}
+.step b{display:block;font-family:var(--font-head);font-weight:var(--w-head);color:var(--red);font-size:var(--fs-h3);margin-bottom:.4cqw}
+.step span{font-size:var(--fs-sm);font-weight:var(--w-label);color:var(--text);line-height:1.4;display:block}
+.visit h3{margin-bottom:1cqw}
+.visit dl{display:grid;gap:1.1cqw}
+.visit dt{font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:var(--w-label);font-family:var(--font-body)}
+.visit dd{font-size:var(--fs-body);color:var(--text);line-height:1.5}
+.visit dd a:hover{color:var(--red)}
+@media (max-aspect-ratio:1/1){
+  .s7 .cols{grid-template-columns:1fr}
+  .steps{gap:2cqw}
+  .step{padding:3cqw}
+  .visit dl{gap:3cqw}
+}
+
+/* ---------- Slide 8: closing / CTA ---------- */
+.s8{align-items:center;text-align:center}
+.s8::after{
+  content:"";position:absolute;left:50%;top:50%;width:70cqw;height:70cqw;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(circle,var(--red-soft),transparent 62%);
+}
+.s8 .tagline{
+  font-family:var(--font-head);font-weight:var(--w-sub);font-size:calc(var(--fs-h3) * 1.05);
+  letter-spacing:.04em;color:var(--muted);margin-bottom:calc(var(--gap) * 1.4);
+}
+.s8 .tagline b{color:var(--text)}
+.s8 h1{max-width:62cqw}
+.s8 .btns{justify-content:center}
+.s8 .meta{margin-top:calc(var(--gap) * 1.6);font-size:var(--fs-sm);max-width:60cqw}
+@media (max-aspect-ratio:1/1){
+  .s8{justify-content:center}
+  .s8 h1{max-width:none}
+  .s8 .meta{max-width:none}
+  .s8 .btns{flex-direction:column;align-items:stretch;width:100%}
+}
+
+/* =========================================================
+   CONTROL BAR
+   ========================================================= */
+.ctrl{
+  position:relative;
+  display:flex;align-items:center;gap:1.2cqw;
+  padding:0 var(--pad);
+  height:var(--fh);
+  background:var(--bg-2);border-top:1px solid var(--line);
+}
+.progress{position:absolute;left:0;top:-1px;height:2px;width:100%;background:transparent}
+.progress i{display:block;height:100%;width:0;background:var(--red);transition:width .75s cubic-bezier(.77,0,.18,1)}
+.ctrl .count{
+  font-family:var(--font-body);font-weight:var(--w-label);font-size:var(--fs-sm);letter-spacing:.14em;color:var(--muted);
+}
+.ctrl .count b{color:var(--text)}
+.ctrl .title{
+  flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:var(--fs-sm);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:var(--w-label);
+  padding-left:1cqw;
+}
+.ibtn{
+  width:var(--btn);height:var(--btn);flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;border:1px solid var(--line);color:var(--text);
+  transition:background .2s,border-color .2s,color .2s,opacity .2s;
+}
+.ibtn:hover:not(:disabled){background:var(--red);border-color:var(--red);color:#fff}
+.ibtn:disabled{opacity:.3;cursor:default}
+.ibtn svg{width:46%;height:46%}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.theme-sun{display:none}
+[data-theme="light"] .theme-sun{display:block}
+[data-theme="light"] .theme-moon{display:none}
+@media (max-aspect-ratio:1/1){
+  .ctrl{gap:2.4cqw}
+  .ctrl .title{display:none}
+  .ctrl .count{flex:1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .track{transition:none}
+  .reveal{transition:none;opacity:1;transform:none}
+  .target .ring-spin{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+<div class="frame">
+
+  <!-- ============ HEADER ============ -->
+  <header class="top">
+    <a class="brand" id="brand" data-show="light" href="https://www.unitech-india.net" target="_blank" rel="noopener" aria-label="UNITECH official website">
+
+      <!-- ============ LOGOS: UPLOAD YOUR TWO LOGO FILES HERE ============
+           Save both files in the "Images" folder, next to this HTML file.
+
+           1) LIGHT theme logo  ->  Images/logo.png       (the logo you already uploaded; use a logo that is visible on WHITE)
+           2) DARK  theme logo  ->  Images/logo-dark.png  (use a white / light logo that is visible on a DARK background)
+
+           To use other file names, just change the src below.
+           The page opens in the LIGHT theme. Clicking a logo opens the official website.
+           If a logo file is missing, the other one is used; if both are missing, the text "UNITECH" is shown. -->
+      <img class="logo logo-light" src="Images/logo.png"      alt="UNITECH">
+      <img class="logo logo-dark"  src="Images/logo.unitech.png" alt="UNITECH">
+      <span class="brand-text" id="brandText">UNI<b>TECH</b></span>
+
+    </a>
+    <nav class="nav" id="nav" aria-label="Slides"></nav>
+  </header>
+
+  <!-- ============ SLIDES ============ -->
+  <main class="viewport" id="viewport">
+    <div class="track" id="track">
+
+      <!-- 1 · HERO -->
+      <section class="slide s1" data-title="Overview" aria-label="Overview">
+        <div class="cols">
+          <div>
+            <div class="tag reveal" style="--d:0">PCB Printing | Customer Story</div>
+            <h1 class="reveal" style="--d:.1">When Every <em>Micron</em> Matters</h1>
+            <div class="story reveal" style="--d:.2">
+              <p class="lead">In PCB manufacturing, a print that is almost right is still wrong.</p>
+              <p></p>
+              <p> </p>
+            </div>
+            <div class="btns reveal" style="--d:.3">
+              <button class="btn" data-go="1">Read the story
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+          <!-- CCD registration target -->
+          <svg class="target reveal" style="--d:.25" viewBox="0 0 200 200" fill="none" stroke="currentColor" aria-hidden="true">
+            <g class="ring-spin"><circle cx="100" cy="100" r="92" stroke-width="1.2" stroke-dasharray="2 7"/></g>
+            <circle cx="100" cy="100" r="70" stroke-width="1.6" opacity=".55"/>
+            <circle cx="100" cy="100" r="42" stroke-width="2"/>
+            <circle cx="100" cy="100" r="5" fill="currentColor" stroke="none"/>
+            <path d="M100 8v44M100 148v44M8 100h44M148 100h44" stroke-width="2"/>
+            <path d="M20 44V20h24M156 20h24v24M180 156v24h-24M44 180H20v-24" stroke-width="2.6"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- 2 · CHALLENGE: FULL-SCREEN COLLAGE OF 4 YOUTUBE VIDEOS -->
+      <section class="slide s2" data-title="Challenge" aria-label="Video collage">
+        <div class="collage">
+
+        <!-- VIDEO 1: landscape video
+             Plays automatically and muted. Clicking the tile opens the video on YouTube. -->
+        <a class="vtile v1" href="https://www.youtube.com/watch?v=MEdlkiNFs70" target="_blank" rel="noopener" aria-label="Watch video 1 on YouTube">
+          <div class="clip" style="--ar:1.7778;background-image:url('https://i.ytimg.com/vi/MEdlkiNFs70/hqdefault.jpg')">
+            <iframe data-src="https://www.youtube-nocookie.com/embed/MEdlkiNFs70?autoplay=1&mute=1&loop=1&playlist=MEdlkiNFs70&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&iv_load_policy=3"
+              title="UNITECH video 1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+          </div>
+          <span class="vlabel"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube</span>
+        </a>
+
+        <!-- VIDEO 2: landscape video
+             Plays automatically and muted. Clicking the tile opens the video on YouTube. -->
+        <a class="vtile v2" href="https://www.youtube.com/watch?v=c6M9HVDltm4" target="_blank" rel="noopener" aria-label="Watch video 2 on YouTube">
+          <div class="clip" style="--ar:1.7778;background-image:url('https://i.ytimg.com/vi/c6M9HVDltm4/hqdefault.jpg')">
+            <iframe data-src="https://www.youtube-nocookie.com/embed/c6M9HVDltm4?autoplay=1&mute=1&loop=1&playlist=c6M9HVDltm4&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&iv_load_policy=3"
+              title="UNITECH video 2" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+          </div>
+          <span class="vlabel"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube</span>
+        </a>
+
+        <!-- VIDEO 3: YouTube Short (vertical, so --ar is 0.5625)
+             Plays automatically and muted. Clicking the tile opens the video on YouTube. -->
+        <a class="vtile v3" href="https://www.youtube.com/shorts/Sa31v9FBsFE" target="_blank" rel="noopener" aria-label="Watch video 3 on YouTube">
+          <div class="clip" style="--ar:0.5625;background-image:url('https://i.ytimg.com/vi/Sa31v9FBsFE/hqdefault.jpg')">
+            <iframe data-src="https://www.youtube-nocookie.com/embed/Sa31v9FBsFE?autoplay=1&mute=1&loop=1&playlist=Sa31v9FBsFE&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&iv_load_policy=3"
+              title="UNITECH video 3" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+          </div>
+          <span class="vlabel"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube</span>
+        </a>
+
+        <!-- VIDEO 4: landscape video
+             Plays automatically and muted. Clicking the tile opens the video on YouTube. -->
+        <a class="vtile v4" href="https://www.youtube.com/watch?v=qXTbxW4FgyQ" target="_blank" rel="noopener" aria-label="Watch video 4 on YouTube">
+          <div class="clip" style="--ar:1.7778;background-image:url('https://i.ytimg.com/vi/qXTbxW4FgyQ/hqdefault.jpg')">
+            <iframe data-src="https://www.youtube-nocookie.com/embed/qXTbxW4FgyQ?autoplay=1&mute=1&loop=1&playlist=qXTbxW4FgyQ&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&iv_load_policy=3"
+              title="UNITECH video 4" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+          </div>
+          <span class="vlabel"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube</span>
+        </a>
+
+        </div>
+      </section>
+
+      <!-- 3 · MEET VISIONPRINT -->
+      <section class="slide s3" data-title="VISIONPRINT" aria-label="Meet VISIONPRINT">
+        <div class="head">
+          <div class="tag reveal" style="--d:0">Meet VISIONPRINT</div>
+          <h2 class="reveal" style="--d:.1">Built for Precision. <em>Engineered for Control.</em></h2>
+          <p class="reveal" style="--d:.2"></p>
+        </div>
+        <div class="features">
+          <article class="card feature reveal" style="--d:.3"><div class="num">01</div><h3>CCD Registration</h3><p>Camera-guided alignment that supports accurate registration on every board.</p></article>
+          <article class="card feature reveal" style="--d:.38"><div class="num">02</div><h3>Linear Servo Peel-Off</h3><p>A smooth, controlled separation after printing.</p></article>
+          <article class="card feature reveal" style="--d:.46"><div class="num">03</div><h3>Adjustable Squeegee Stroke</h3><p>Stroke settings you can tune to suit the job.</p></article>
+          <article class="card feature reveal" style="--d:.54"><div class="num">04</div><h3>Vacuum Bed Sliding</h3><p>Steady board handling through the print cycle.</p></article>
+        </div>
+      </section>
+
+      <!-- 4 · BENEFITS -->
+      <section class="slide s4" data-title="Benefits" aria-label="Benefits">
+        <div class="cols">
+          <div>
+            <div class="tag reveal" style="--d:0">On Your Shop Floor</div>
+            <h2 class="reveal" style="--d:.1">Control You Can <em>See</em> in Every Print</h2>
+            <ul class="benefits">
+              <li class="reveal" style="--d:.2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Uniform results,</b> board after board</span></li>
+              <li class="reveal" style="--d:.27"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Accurate registration,</b> supported by CCD vision</span></li>
+              <li class="reveal" style="--d:.34"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Less dependence on manual skill,</b> thanks to fully automatic operation</span></li>
+              <li class="reveal" style="--d:.41"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Smoother, controlled movements</b> across the print cycle</span></li>
+              <li class="reveal" style="--d:.48"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Confidence in demanding industrial work,</b> where precision isn't optional</span></li>
+            </ul>
+          </div>
+          <!-- RIGHT-SIDE IMAGE: save your image as Images/benefits.jpg (or change the src below).
+               It fills the box automatically. If the file is missing, the placeholder stays visible. -->
+          <figure class="shot reveal" style="--d:.3">
+            <div class="ph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>
+              <span>Image coming soon</span>
+            </div>
+           
+<img src="Images/vision%20print.png" alt="VISIONPRINT in production" loading="lazy" onerror="this.remove()">
+
+          </figure>
+        </div>
+      </section>
+
+
+
+      <!-- 6 · STAR COMPANIES -->
+      <section class="slide s6" data-title="Star Companies" aria-label="Our star companies">
+        <div class="head">
+          <div class="tag reveal" style="--d:0">Our Star Companies</div>
+          <h2 class="reveal" style="--d:.1">Trusted by Leaders in <em>Precision Manufacturing</em></h2>
+          <p class="reveal" style="--d:.2">Industries that can't afford compromise choose UNITECH.</p>
+        </div>
+        <div class="logos reveal" style="--d:.3">
+          <!-- STAR COMPANIES: each tile is one company.
+               1) Change the link in href to the company's website (or remove href and change <a> to <div> if no link).
+               2) Replace the text with the company name, OR use a logo image instead:
+                  <a class="logo-tile" href="https://..." target="_blank" rel="noopener"><img src="logos/company-1.png" alt="Company 1"></a>
+               To add more companies, copy one tile and paste it below. -->
+
+          <!-- COMPANY 1 -->
+          <a class="logo-tile" href="https://www.company1-website.com" target="_blank" rel="noopener" aria-label="Company 1">Inforpower Technologies Pvt. Ltd.</a>
+
+          <!-- COMPANY 2 -->
+          <a class="logo-tile" href="https://www.company2-website.com" target="_blank" rel="noopener" aria-label="Company 2">circuit printer</a>
+
+          <!-- COMPANY 3 -->
+          <a class="logo-tile" href="https://www.company3-website.com" target="_blank" rel="noopener" aria-label="Company 3">Circuit Technology</a>
+
+          <!-- COMPANY 4 -->
+          <a class="logo-tile" href="https://www.company4-website.com" target="_blank" rel="noopener" aria-label="Company 4">Circuit Product</a>
+
+          <!-- COMPANY 5 -->
+          <a class="logo-tile" href="https://www.company5-website.com" target="_blank" rel="noopener" aria-label="Company 5">K.P elecroways</a>
+
+          <!-- COMPANY 6 -->
+          <a class="logo-tile" href="https://www.company6-website.com" target="_blank" rel="noopener" aria-label="Company 6">Skylark circuit Pvt.Ltd</a>
+
+          <!-- COMPANY 7 -->
+          <a class="logo-tile" href="https://www.company7-website.com" target="_blank" rel="noopener" aria-label="Company 7">Three D Micro System Pvt.Ltd.</a>
+
+          <!-- COMPANY 8 -->
+          <a class="logo-tile" href="https://www.company8-website.com" target="_blank" rel="noopener" aria-label="Company 8">Gujarat Micro India Pvt.Ltd</a>
+        </div>
+      </section>
+
+      <!-- 7 · DEMO CENTRE -->
+      <!-- <section class="slide s7" data-title="Demo Centre" aria-label="UNITECH Demo Centre">
+        <div class="cols">
+          <div>
+            <div class="tag reveal" style="--d:0">UNITECH Demo Centre</div>
+            <h2 class="reveal" style="--d:.1">Experience It <em>Before You Invest</em></h2>
+            <p class="reveal" style="--d:.2">Through this story, we've shown how the right printing technology can support demanding industrial applications. But we believe technology should be experienced, not just described. Visit the UNITECH Demo Centre, see VISIONPRINT run, and judge the precision for yourself.</p>
+            <div class="steps reveal" style="--d:.3">
+              <div class="step"><b>01</b><span>Visit the Demo Centre</span></div>
+              <div class="step"><b>02</b><span>See VISIONPRINT run</span></div>
+              <div class="step"><b>03</b><span>Judge the precision yourself</span></div>
+            </div>
+          </div>
+          <aside class="card visit reveal" style="--d:.35">
+            <h3>Visit UNITECH</h3>
+            <dl>
+              <div><dt>Address</dt><dd>Plot No. 78 &amp; 79, VVCMC Industrial Area, Umele Road, Vasai West, Dist. Palghar, Maharashtra, India 401 207</dd></div>
+              <div><dt>Phone</dt><dd><a href="tel:+917888028376">+91 788 802 8376</a></dd></div>
+              <div><dt>Email</dt><dd><a href="mailto:info@unitech-india.net">info@unitech-india.net</a></dd></div>
+              <div><dt>Website</dt><dd><a href="https://www.unitech-india.net" target="_blank" rel="noopener">www.unitech-india.net</a></dd></div>
+            </dl>
+          </aside>
+        </div>
+      </section> -->
+
+      <!-- 8 · CLOSING + CTA -->
+      <section class="slide s8" data-title="Connect" aria-label="Connect with us">
+        <div class="tagline reveal" style="--d:0"><b></b>  Precision You Can See. Quality You Can Trust.</div>
+        <h1 class="reveal" style="--d:.12">Don't Just Take Our Word. <em>Experience VISIONPRINT.</em></h1>
+        <div class="btns reveal" style="--d:.24">
+          <a class="btn" href="mailto:info@unitech-india.net?subject=Book%20a%20VISIONPRINT%20Demo%20Visit">Book a Demo Visit</a>
+          <a class="btn ghost" href="tel:+917888028376">Call +91 788 802 8376</a>
+          <!-- WHATSAPP: add your number in WHATSAPP.number in the script at the bottom of this file. -->
+          
+
+<!-- WHATSAPP BUTTON -->
+        <a class="btn wa"
+          id="waBtn"
+          href="https://wa.me/917888028376?text=Hi%20UNITECH%2C%20I%20am%20interested%20in%20VISIONPRINT.%20I%20would%20like%20to%20know%20more."
+          target="_blank"
+          rel="noopener">
+   
+      <svg viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+   </svg>
+
+   Chat on WhatsApp
+</a>
+
+
+        </div>
+        <p class="meta reveal" style="--d:.34"></p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ CONTROLS ============ -->
+  <footer class="ctrl">
+    <div class="progress"><i id="bar"></i></div>
+    <button class="ibtn" id="prev" aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="ibtn" id="next" aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    <div class="count" id="count"></div>
+    <div class="title" id="slideTitle"></div>
+    <button class="ibtn" id="theme" aria-label="Toggle light / dark theme">
+      <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+      <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="ibtn" id="full" aria-label="Toggle full screen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </footer>
+
+</div>
+</div>
+
+<script>
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* =========================================================
+   SETTINGS  ·  WhatsApp (the logo files are set in the header HTML at the top of the page)
+   ========================================================= */
+
+/* WHATSAPP: put your number here with the country code and digits only (no + or spaces), e.g. '919876543210'.
+   While it is empty, the button opens WhatsApp and lets the visitor choose a contact. */
+const WHATSAPP = {
+  number: '917888028376',
+  message: "Hello UNITECH, I'd like to book a VISIONPRINT demo visit."
+};
+
+/* =========================================================
+   LOGO  (shows the logo of the current theme; falls back to the other logo, then to text)
+   ========================================================= */
+function logoSync(){
+  const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const other = theme === 'dark' ? 'light' : 'dark';
+  const brand = $('#brand');
+  const img = k => $('.logo-' + k);
+  const ok  = k => img(k).complete && img(k).naturalWidth > 0;
+  const loading = ['light', 'dark'].some(k => !img(k).complete);
+  let show = 'text';
+  if (ok(theme)) show = theme; else if (ok(other)) show = other;
+  if (show === 'text' && loading) return;                       // still loading: wait
+  brand.dataset.show = show;
+  brand.classList.toggle('chip', theme === 'dark' && show === 'light');   // light logo on the dark theme -> white chip behind it
+}
+['light', 'dark'].forEach(k => { $('.logo-' + k).addEventListener('load', logoSync); $('.logo-' + k).addEventListener('error', logoSync); });
+logoSync();
+
+/* =========================================================
+   WHATSAPP BUTTON
+   ========================================================= */
+(function whatsapp(){
+  const digits = String(WHATSAPP.number || '').replace(/\D/g, '');
+  $('#waBtn').href = 'https://wa.me/' + digits + '?text=' + encodeURIComponent(WHATSAPP.message || '');
+})();
+
+/* =========================================================
+   SLIDER
+   ========================================================= */
+const track  = $('#track');
+const slides = $$('.slide', track);
+const nav    = $('#nav');
+const total  = slides.length;
+let current  = 0;
+
+nav.innerHTML = slides.map((s, i) => `<button type="button" data-go="${i}">${esc(s.dataset.title)}</button>`).join('');
+const navBtns = $$('button', nav);
+const pad = n => String(n).padStart(2, '0');
+
+/* YouTube iframes load only while the collage slide is on screen, and are unloaded when you leave it
+   (saves data and stops the playback). */
+const ytFrames = $$('iframe[data-src]');
+function syncVideos(n){
+  const on = slides[n].classList.contains('s2');
+  ytFrames.forEach(f => {
+    if (on) { if (f.getAttribute('src') !== f.dataset.src) f.src = f.dataset.src; }
+    else if (f.getAttribute('src') !== 'about:blank') f.src = 'about:blank';
+  });
+}
+
+function go(n, instant){
+  n = Math.max(0, Math.min(total - 1, n));
+  current = n;
+  syncVideos(n);
+  if (instant) { track.style.transition = 'none'; }
+  track.style.transform = `translateX(${-n * 100}%)`;
+  if (instant) { void track.offsetWidth; track.style.transition = ''; }
+
+  slides.forEach((s, i) => {
+    s.classList.toggle('is-active', i === n);
+    s.setAttribute('aria-hidden', i === n ? 'false' : 'true');
+    if ('inert' in s) s.inert = i !== n;
+  });
+  navBtns.forEach((b, i) => {
+    b.setAttribute('aria-current', i === n ? 'true' : 'false');
+    if (i === n) b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
+  });
+  slides[n].scrollTop = 0;
+  $('#count').innerHTML = `<b>${pad(n + 1)}</b> / ${pad(total)}`;
+  $('#slideTitle').textContent = slides[n].dataset.title;
+  $('#bar').style.width = ((n + 1) / total * 100) + '%';
+  $('#prev').disabled = n === 0;
+  $('#next').disabled = n === total - 1;
+  try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+}
+
+/* clicks: header titles, any [data-go] button, prev/next */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-go]');
+  if (t) go(parseInt(t.dataset.go, 10));
+});
+$('#prev').addEventListener('click', () => go(current - 1));
+$('#next').addEventListener('click', () => go(current + 1));
+
+/* keyboard */
+document.addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  switch (e.key) {
+    case 'ArrowRight': case 'PageDown': go(current + 1); break;
+    case 'ArrowLeft':  case 'PageUp':   go(current - 1); break;
+    case 'Home': go(0); break;
+    case 'End':  go(total - 1); break;
+    case 'f': case 'F': toggleFull(); break;
+    default: return;
+  }
+});
+
+/* swipe (ignores video, iframes and horizontally scrolling lists) */
+let sx = 0, sy = 0, swipe = false;
+track.addEventListener('touchstart', e => {
+  swipe = !e.target.closest('video, iframe, .quotes');
+  sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+}, { passive: true });
+track.addEventListener('touchend', e => {
+  if (!swipe) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) go(current + (dx < 0 ? 1 : -1));
+}, { passive: true });
+
+/* theme */
+$('#theme').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  logoSync();
+});
+
+/* full screen */
+function toggleFull(){
+  if (!document.fullscreenEnabled) return;
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
+$('#full').addEventListener('click', toggleFull);
+if (!document.fullscreenEnabled) $('#full').style.display = 'none';
+
+/* start (supports #3 style deep links) */
+const start = parseInt((location.hash || '').replace('#', ''), 10);
+go(Number.isFinite(start) ? start - 1 : 0, true);
+</script>
+</body>
+</html>
